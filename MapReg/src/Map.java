@@ -60,18 +60,20 @@ public class Map extends JFrame {
 		public void actionPerformed(ActionEvent ave) {
 			int answer = jfc.showOpenDialog(Map.this);
 			
-			if (answer != JFileChooser.APPROVE_OPTION);{
+			if (answer != JFileChooser.APPROVE_OPTION){
 				return;
 			}
 			
 			File file = jfc.getSelectedFile();
 			String fileName = file.getAbsolutePath();
+			
 			if(scroll != null) {
 				remove(scroll);
 			}
 			ip = new ImagePanel(fileName);
 			scroll = new JScrollPane(ip);
 			add(scroll, BorderLayout.CENTER);
+			
 			validate();
 			repaint();
 			
