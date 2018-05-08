@@ -15,12 +15,15 @@ public class Map extends JFrame {
 	
 	public Map() {
 		super("Map");
+				
 		
 		JMenuBar mbar = new JMenuBar();
 		setJMenuBar(mbar);
 		
+				//Archive		
 		JMenu archiveMenu = new JMenu ("Archive");
 		mbar.add(archiveMenu);		
+		
 		JMenuItem newMap = new JMenuItem("New Map");
 		archiveMenu.add(newMap);
 		newMap.addActionListener(new NewMapLiss());		
@@ -33,24 +36,46 @@ public class Map extends JFrame {
 		JMenuItem exit = new JMenu ("Exit");
 		archiveMenu.add(exit);
 		//exit.addActionListener(new ExitLiss);
+				//Archive end
 		
-		
-		
+				// Upper buttons
 		JPanel up = new JPanel();
-		up.setLayout(new BoxLayout(up, BoxLayout.X_AXIS));
+		//up.setLayout(new BoxLayout(up, BoxLayout.X_AXIS));
 		add(up, BorderLayout.NORTH);
 		
 		JButton newButton = new JButton("New");
 		up.add(newButton);
 		//newButton.addActionListener(new newButton());
 		
+		Box rbVertical = Box.createVerticalBox();
+		JRadioButton named = new JRadioButton("Named");
+		JRadioButton described = new JRadioButton("Described");
+		rbVertical.add(named);
+		rbVertical.add(described);
+		up.add(rbVertical);
+		
+		JTextField searchField = new JTextField("Search", 10);
+		up.add(searchField);
+		
+		JButton searchButton = new JButton("Search");
+		up.add(searchButton);
+		
+		JButton hideButton = new JButton("Hide");
+		up.add(hideButton);
+		
+		JButton removeButton = new JButton("Remove");
+		up.add(removeButton);
+		
+		JButton cordButton = new JButton("Coordinates");
+		up.add(cordButton);
+				// end Upper buttons
 		
 		FileFilter ff = new FileNameExtensionFilter("Image", "jpg", "gif", "png");		
 		jfc.setFileFilter(ff);
 		
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(600, 500);
+		setSize(1200, 1000);
 		setLocationRelativeTo(null);
 		setVisible(true);
 		
