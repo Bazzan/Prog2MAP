@@ -4,7 +4,7 @@ import java.awt.event.*;
 import java.io.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.*;
-
+import jav
 
 public class Map extends JFrame {
 	
@@ -74,12 +74,16 @@ public class Map extends JFrame {
 		jfc.setFileFilter(ff);
 		
 		
+		ip.mouseDown(arg0, arg1, arg2)
+		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(1200, 1000);
 		setLocationRelativeTo(null);
 		setVisible(true);
 		
 	}
+	class MouseLiss extends MouseAdapter
+	
 	
 	class NewMapLiss implements ActionListener{
 		public void actionPerformed(ActionEvent ave) {
