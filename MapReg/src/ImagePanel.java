@@ -1,4 +1,4 @@
-import javax.swing.*;
+ import javax.swing.*;
 import java.awt.*;
 
 public class ImagePanel extends JPanel {
@@ -24,4 +24,10 @@ public class ImagePanel extends JPanel {
 		
 	}
 	
+//	public void paintTriangle(Location loc) {
+//		MapPosition location = loc.getMapPosition();
+//		loc.addMouseListener(new );
+//		
+//		
+//	}
 }
