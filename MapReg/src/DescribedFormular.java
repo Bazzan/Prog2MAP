@@ -1,3 +1,4 @@
+
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -5,7 +6,7 @@ import javax.swing.JTextField;
 
 public class DescribedFormular extends JPanel{
 	private JTextField nameField = new JTextField(15);
-	private JTextField descriptionField = new JTextField(); 
+	private JTextField descriptionField = new JTextField(30); 
 		
 	public DescribedFormular() {
 			
@@ -22,6 +23,14 @@ public class DescribedFormular extends JPanel{
 			
 			
 		}
+	public String getName() {
+		return nameField.getText();
+	}
+	
+	
+	public String getDescription() {
+		return descriptionField.getText();
+	}
 		
 		
 	}

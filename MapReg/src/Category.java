@@ -1,3 +1,4 @@
+
 import java.awt.*;
 
 
@@ -13,7 +14,7 @@ public enum Category {
 			case Bus:
 				return Color.RED;
 			case Underground:
-				return Color.LIGHT_GRAY;
+				return Color.CYAN;
 			default:
 				return Color.WHITE;
 		}

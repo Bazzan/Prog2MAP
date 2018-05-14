@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -6,23 +7,24 @@ public class Place extends JComponent {
 	private String name;
 	private Category cg;
 	private Position cordinates;
+	private boolean marked = false;
 	
-	private JTextField nameField = new JTextField(15);
-	private JTextField descriptionField = new JTextField(); 
-	
+
 	public Place(String name, Position mp, Category cg) {
 		this.name = name;
 		this.cordinates = mp;
 		this.cg = cg;
 		
 		
-		int x1 = mp.getX();
-		int y1 = mp.getY();
+		int x1 = mp.getX() - 15;
+		int y1 = mp.getY() - (15 * 2);
+		
+		setBounds(x1, y1, 15 * 2, 15 *2);
 	}
 	
-//	public String getName() {
-//		return name;
-//	}
+	public String getName() {
+		return name;
+	}
 	
 	public Category getCategory() {
 		return cg;
@@ -36,6 +38,14 @@ public class Place extends JComponent {
 		return cordinates.getMapPosition();
 	}
 	
+	public boolean getIsMakred() {
+		return marked;
+	}
+	
+	public void setIsMarked(boolean mark) {
+	marked = mark;	
+	}
+	
 	protected void paintComponent(Graphics g) {
 		int[] xs = new int[] { 0, 15, 15 *2};
 		int[] ys = new int[] { 0, 15 * 2, 0};
@@ -44,25 +54,22 @@ public class Place extends JComponent {
 		
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
-		g.setColor(c);
-		g.fillPolygon(xs, ys, 3);
-		g.drawPolygon(xs, ys, 3);
-		
-	
+		if(marked) {
+			
+			g.setColor(c);
+			g.fillPolygon(xs, ys, 3);
+			g.setColor(Color.BLACK);
+			g2d.setStroke(new BasicStroke(3));
+			g.drawPolygon(xs, ys, 3);
+		}else {
+			g.setColor(c);
+			g.fillPolygon(xs, ys, 3);
+			g.drawPolygon(xs, ys, 3);
+		}
 	}
 	
 
-	class NamePlace extends Place{
 
-		public NamePlace(String name, Position mp, Category cg) {
-			super(name, mp, cg);
-		}
-		
-		public String toString() {
-			return "Named place: " + getCategory() + ", " + getCordinates() +", " + getName();
-					 
-		}
-	}
 	
 //	public class NamedFormular extends JPanel{
 //
@@ -79,23 +86,7 @@ public class Place extends JComponent {
 //		}
 //	}
 	
-	class DescribedPlace extends Place{
-		private String description;
-		
-		public DescribedPlace(String description, String name, Position mp, Category cg) {
-			super(name, mp, cg);
-			this.description = description;
 
-		}
-		
-		public String getDescription() {
-			return description;
-		}
-		public String toString() {
-			return "Described place: " + getCategory() + ", " + getCordinates() +", " + getName() + ", " + description;
-		}
-		
-	}
 	
 //	public class DescribedFormular extends JPanel{
 //
