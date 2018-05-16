@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +44,7 @@ public class Main extends JFrame {
 	// right buttons and stuff
 	JButton hideCG = new JButton("Hide");
 	
+	JPanel centerP = new JPanel();
 
 	private boolean mapDisplaying = false;
 	private boolean changed = false;
@@ -50,8 +52,13 @@ public class Main extends JFrame {
 	
 	public Main() {
 		super("Main");
-
-
+		
+		cgPlace.put(Category.Bus, new HashSet<>());
+		cgPlace.put(Category.Underground, new HashSet<>());
+		cgPlace.put(Category.Train, new HashSet<>());
+		cgPlace.put(Category.None, new HashSet<>());
+		
+		
 		JMenuBar mbar = new JMenuBar();
 		setJMenuBar(mbar);
 
@@ -107,6 +114,11 @@ public class Main extends JFrame {
 		upP.add(cordButton);
 		// end Upper buttons
 
+		centerP.setLayout(new BorderLayout());
+		centerP.setBorder(new EmptyBorder(4,4,4,4));
+		add(centerP, BorderLayout.CENTER);
+		centerP.addMouseListener(new ClickedLiss());
+		
 		// right Panel
 		JPanel rightP = new JPanel();
 		rightP.setLayout(new BoxLayout(rightP, BoxLayout.Y_AXIS));
@@ -128,19 +140,33 @@ public class Main extends JFrame {
 		rightP.add(cgScroll);
 		
 		rightP.add(hideCG);
-		// hideCG.addActionListener(new HideCGLiss());
+		hideCG.addActionListener(new HideCGLiss());
 
 
 
 		// ip.mouseDown(arg0, arg1, arg2)
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(1200, 1000);
+		setSize(600, 500);
 		setLocationRelativeTo(null);
 		setVisible(true);
 
 	}
-
+//TODO: kolla om de ska vara omarkerade n�r man tar fram dom igen
+	class ClickedLiss extends MouseAdapter{
+		public void mouseClicked(MouseEvent e) {
+			System.out.println("clicked");
+			ImagePanel imgP = (ImagePanel)e.getSource();
+			System.out.print("cleared?");
+			
+			if(ip.equals(imgP)) {
+				
+				cgList.clearSelection();
+			}
+		System.out.print("cleared?");
+		}
+	}
+	
 	class HideButtonLiss implements ActionListener{
 		public void actionPerformed(ActionEvent ave) {
 			cgList.clearSelection();
@@ -151,8 +177,33 @@ public class Main extends JFrame {
 	class CategoryLiss extends MouseAdapter {
 		public void mouseClicked(MouseEvent e) {
 			Category cg = cgList.getSelectedValue();
+			
+
 			Set<Place> places = cgPlace.get(cg);
-			// ip.showTriangle(places);
+			
+			
+			ip.triangleShow(places);
+			System.out.println("Cgliss");
+			
+			
+		}
+	}
+	class HideCGLiss implements ActionListener{
+		public void actionPerformed(ActionEvent ave) {
+			Category cg = cgList.getSelectedValue();
+			Set<Place> places = cgPlace.get(cg);
+
+			if ( cg == null) {
+				places = cgPlace.get(Category.None);
+			}
+			System.out.println(cg);
+			System.out.println(places);
+			
+			ip.cgHide(places);
+			cgList.clearSelection();
+			
+			System.out.println("hidecgliss");
+			
 		}
 	}
 
@@ -277,11 +328,11 @@ public class Main extends JFrame {
 			String path = file.getAbsolutePath();
 
 			if (scroll != null) {
-				remove(scroll);
+				centerP.remove(scroll);
 			}
 			ip = new ImagePanel(path);
 			scroll = new JScrollPane(ip);
-			add(scroll, BorderLayout.CENTER);
+			centerP.add(scroll, BorderLayout.CENTER);
 
 			mapDisplaying = true; // bool för att kolla om kartan är laddad
 
@@ -363,23 +414,26 @@ public class Main extends JFrame {
 			
 		}
 	}
+	//TODO: addplace
 	
-	private void addPlace(Place p) {
-		placeByMapPosition.put(p.getPosition(), p);
+	private void addPlace(Place place) {
+		placeByMapPosition.put(place.getPosition(), place);
 
-		String name = p.getName();
+		String name = place.getName();
 		List<Place> sameName = placeByName.get(name);
 
-		ip.addTriangle(p);
+		ip.addTriangle(place);
 
 		if (sameName == null) {
 			sameName = new LinkedList<Place>();
 			placeByName.put(name, sameName);
 		}
-		sameName.add(p);
-
-//		cgPlace.get(p.getCategory()).add(p);
+		sameName.add(place);
+		System.out.println(place);
+//		cgPlace.get(place.getCategory()).add(place);
+		cgPlace.get(place.getCategory()).add(place);
 		changed = true;
+		System.out.println(place);
 
 	}
 

@@ -10,13 +10,13 @@ public enum Category {
 	public Color getColor() {
 		switch(this) {
 			case Train:
-				return Color.MAGENTA;
+				return Color.GREEN;
 			case Bus:
 				return Color.RED;
 			case Underground:
-				return Color.CYAN;
+				return Color.BLUE;
 			default:
-				return Color.DARK_GRAY;
+				return Color.BLACK;
 		}
 		
 	}
@@ -26,9 +26,10 @@ public enum Category {
 		case "Train":
 			return Category.Train;
 		case "Bus":
+			System.out.print("parse cg");
 			return Category.Bus;
 		case "Underground":
-			return Category.Train;
+			return Category.Underground;
 		default:
 			return Category.None;
 		}

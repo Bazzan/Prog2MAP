@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class ImagePanel extends JPanel {
 
@@ -36,7 +37,7 @@ public class ImagePanel extends JPanel {
 	}
 	
 	class AddTriangleLiss extends MouseAdapter{
-//		@Override
+		@Override
 		public void mouseClicked(MouseEvent mev) {
 
 			Place place = (Place)mev.getSource();
@@ -78,7 +79,7 @@ public class ImagePanel extends JPanel {
 		for (Place place : placesMarked) {
 			place.setIsMarked(false);
 			
-//			placesMarked.clear();
+			placesMarked.clear();
 			repaint();
 		}
 	}
@@ -86,9 +87,30 @@ public class ImagePanel extends JPanel {
 	public void triangelHide() {
 		for(Place place : placesMarked) {
 			place.setVisible(false);
-			
+			System.out.println("trihide");
 		}
 	}
+	
+	public void cgHide(Set<Place> places) {
+		this.unMark();
+		for(Place place: places) {
+			this.markIt(place);
+			System.out.println("cghide");
+		}
+		this.triangelHide();
+		this.repaint();
+	}
+	
+	public void triangleShow(Set<Place> places) {
+		System.out.println(places);
+		for (Place place : places) {
+			place.setVisible(true);
+		}
+		this.unMark();
+		this.repaint();
+		
+	}
+	
 	
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
