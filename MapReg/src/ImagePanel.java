@@ -12,8 +12,8 @@ public class ImagePanel extends JPanel {
 	private ImageIcon image;
 	private List<Place> placesMarked = new LinkedList<>();
 	
-	ImagePanel(String fileName){
-		image = new ImageIcon(fileName);
+	ImagePanel(String path){
+		image = new ImageIcon(path);
 		int w = image.getIconWidth();
 		int h = image.getIconHeight();
 		
@@ -32,7 +32,7 @@ public class ImagePanel extends JPanel {
 		add(place);
 		validate();
 		repaint();
-		System.out.println("REPAINT" + position.toString());
+		System.out.println("add tri REPAINT");
 	}
 	
 	class AddTriangleLiss extends MouseAdapter{
@@ -48,7 +48,7 @@ public class ImagePanel extends JPanel {
 					JOptionPane.showMessageDialog(null,  message, "Place Information!", JOptionPane.OK_OPTION);
 					
 				}else if(place instanceof DescribedPlace) {
-					String message = "'" + place.getCordinates() + "' " + place.getName() + ((DescribedPlace) place).getDescription(); 
+					String message =  place.getName() + ": " + ((DescribedPlace) place).getDescription() + "'" + place.getCordinates()+ "'"; 
 					JOptionPane.showMessageDialog(null,  message, "Place Information!", JOptionPane.OK_OPTION);
 					
 				}
@@ -64,6 +64,29 @@ public class ImagePanel extends JPanel {
 				place.setIsMarked(!marked);
 				System.out.println("triLiss");
 			}
+		}
+	}
+	public void markIt(Place place) {
+		place.setIsMarked(true);
+		placesMarked.add(place);
+		this.repaint();
+		System.out.println("MarkIt");
+		
+	}
+	
+	public void unMark() {
+		for (Place place : placesMarked) {
+			place.setIsMarked(false);
+			
+//			placesMarked.clear();
+			repaint();
+		}
+	}
+	
+	public void triangelHide() {
+		for(Place place : placesMarked) {
+			place.setVisible(false);
+			
 		}
 	}
 	

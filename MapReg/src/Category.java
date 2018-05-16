@@ -16,7 +16,7 @@ public enum Category {
 			case Underground:
 				return Color.CYAN;
 			default:
-				return Color.WHITE;
+				return Color.DARK_GRAY;
 		}
 		
 	}

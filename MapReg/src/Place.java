@@ -40,10 +40,12 @@ public class Place extends JComponent {
 	
 	public boolean getIsMakred() {
 		return marked;
+		
 	}
 	
 	public void setIsMarked(boolean mark) {
-	marked = mark;	
+	marked = mark;
+	repaint();
 	}
 	
 	protected void paintComponent(Graphics g) {
@@ -55,13 +57,14 @@ public class Place extends JComponent {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		if(marked) {
-			
+			System.out.println("marked stroke");
 			g.setColor(c);
 			g.fillPolygon(xs, ys, 3);
 			g.setColor(Color.BLACK);
 			g2d.setStroke(new BasicStroke(3));
 			g.drawPolygon(xs, ys, 3);
 		}else {
+			System.out.println(" not marked = no strokes");
 			g.setColor(c);
 			g.fillPolygon(xs, ys, 3);
 			g.drawPolygon(xs, ys, 3);

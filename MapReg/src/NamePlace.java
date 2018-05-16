@@ -6,7 +6,7 @@ public class NamePlace extends Place {
 	}
 
 	public String toString() {
-		return "Named place: " + getCategory() + ", " + getCordinates() + ", " + getName();
+		return "Named place: " + getName() + ", " + getCategory() + ", " + getCordinates() + "," ;
 
 	}
 }

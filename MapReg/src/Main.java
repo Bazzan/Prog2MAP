@@ -42,13 +42,15 @@ public class Main extends JFrame {
 	JTextField searchField = new JTextField("Search", 10);
 	// right buttons and stuff
 	JButton hideCG = new JButton("Hide");
-	JScrollPane cgScroll = new JScrollPane(cgList);
+	
 
 	private boolean mapDisplaying = false;
 	private boolean changed = false;
-
+	private boolean placesLoaded= false;
+	
 	public Main() {
 		super("Main");
+
 
 		JMenuBar mbar = new JMenuBar();
 		setJMenuBar(mbar);
@@ -60,13 +62,15 @@ public class Main extends JFrame {
 		JMenuItem newMap = new JMenuItem("New Map");
 		archiveMenu.add(newMap);
 		newMap.addActionListener(new NewMapLiss());
-		JMenuItem loadPlaces = new JMenu("Load Places");
+		
+		JMenuItem loadPlaces = new JMenuItem("Load Places");
 		archiveMenu.add(loadPlaces);
-		// loadPlaces.addActionListener(new LoadPlacesLiss);
-		JMenuItem save = new JMenu("Save");
+		loadPlaces.addActionListener(new LoadPlacesLiss());
+		
+		JMenuItem save = new JMenuItem("Save");
 		archiveMenu.add(save);
-		// save.addActionListener(new SaveLiss);
-		JMenuItem exit = new JMenu("Exit");
+		//save.addActionListener(new SaveLiss);
+		JMenuItem exit = new JMenuItem("Exit");
 		archiveMenu.add(exit);
 		// exit.addActionListener(new ExitLiss);
 		// Archive end
@@ -96,7 +100,8 @@ public class Main extends JFrame {
 		upP.add(searchButton);
 
 		upP.add(hideButton);
-
+		hideButton.addActionListener(new HideButtonLiss());
+		
 		upP.add(removeButton);
 
 		upP.add(cordButton);
@@ -107,17 +112,25 @@ public class Main extends JFrame {
 		rightP.setLayout(new BoxLayout(rightP, BoxLayout.Y_AXIS));
 		rightP.setBorder(new EmptyBorder(4, 4, 4, 4));
 		add(rightP, BorderLayout.EAST);
+		
+		JLabel cgLabel = new JLabel("Categories");
+		rightP.add(cgLabel);
 
+		
+		
 		// right buttons
 		cgList = new JList<>(cg);
+		
 		rightP.add(cgList);
 		cgList.addMouseListener(new CategoryLiss());
+		
+		JScrollPane cgScroll = new JScrollPane(cgList);
 		rightP.add(cgScroll);
+		
 		rightP.add(hideCG);
 		// hideCG.addActionListener(new HideCGLiss());
 
-		FileFilter ff = new FileNameExtensionFilter("Image", "jpg", "gif", "png");
-		jfc.setFileFilter(ff);
+
 
 		// ip.mouseDown(arg0, arg1, arg2)
 
@@ -128,6 +141,13 @@ public class Main extends JFrame {
 
 	}
 
+	class HideButtonLiss implements ActionListener{
+		public void actionPerformed(ActionEvent ave) {
+			cgList.clearSelection();
+			ip.triangelHide();
+		}
+	}
+	
 	class CategoryLiss extends MouseAdapter {
 		public void mouseClicked(MouseEvent e) {
 			Category cg = cgList.getSelectedValue();
@@ -242,6 +262,11 @@ public class Main extends JFrame {
 	// }
 	class NewMapLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
+			
+			FileFilter ff = new FileNameExtensionFilter("Images", "jpg", "png", "gif");
+			jfc.setFileFilter(ff);
+//			File folder = new File("")
+			
 			int answer = jfc.showOpenDialog(Main.this);
 
 			if (answer != JFileChooser.APPROVE_OPTION) {
@@ -249,12 +274,12 @@ public class Main extends JFrame {
 			}
 
 			File file = jfc.getSelectedFile();
-			String fileName = file.getAbsolutePath();
+			String path = file.getAbsolutePath();
 
 			if (scroll != null) {
 				remove(scroll);
 			}
-			ip = new ImagePanel(fileName);
+			ip = new ImagePanel(path);
 			scroll = new JScrollPane(ip);
 			add(scroll, BorderLayout.CENTER);
 
@@ -267,6 +292,78 @@ public class Main extends JFrame {
 
 	}
 
+	class LoadPlacesLiss implements ActionListener{
+		public void actionPerformed(ActionEvent ave) {
+			Place loadedPlaces = null;
+			
+			FileFilter ff = new FileNameExtensionFilter("Text Files", "txt");
+			jfc.setFileFilter(ff);
+			
+			// TODO: check if you want to save
+			if (placesLoaded && changed) {
+				int answer = JOptionPane.showConfirmDialog(Main.this, "Unsaved changes, do you want to continue anyways?",
+					"Warning", JOptionPane.OK_CANCEL_OPTION);
+				if (answer != JOptionPane.OK_OPTION) {
+					return;
+				}
+			}
+//			File foalder = new File();
+//			jfc = new JFileChooser();
+//			
+//			
+//			
+			int answer = jfc.showOpenDialog(Main.this);
+			if (answer != JFileChooser.APPROVE_OPTION) {
+				return;
+			}
+			
+			File file = jfc.getSelectedFile();
+			String path = file.getAbsolutePath();
+			
+			try {
+				FileReader inFile = new FileReader(path);
+				BufferedReader in = new BufferedReader(inFile);
+				String line;
+				
+				while ((line = in.readLine()) != null) {
+					String[] token = line.split(","); //splitting on ,
+					String type = token[0];
+					Category cg = Category.parseCategory(token[1]);
+					int x = Integer.parseInt(token[2]);
+					int y = Integer.parseInt(token[3]);
+					Position mp = new Position(x, y);
+					String name = token[4];
+					
+					if (type.equals("Described")) {
+						String description = token [5];
+						loadedPlaces = new DescribedPlace(description, name, mp , cg);
+						
+					}else if(type.equals("Named")) {
+						loadedPlaces = new NamePlace(name, mp, cg);
+						
+					}else  {
+						JOptionPane.showMessageDialog(null, "Not correct file", "ERROR", JOptionPane.ERROR_MESSAGE);
+						loadedPlaces = null;
+					}
+					if(loadedPlaces != null) {
+						addPlace(loadedPlaces);
+					}
+					placesLoaded = true;
+				}
+				changed = false;
+				
+				in.close();
+				inFile.close();
+			}catch (FileNotFoundException e) {
+				JOptionPane.showMessageDialog(Main.this, "File can't be opened");
+			}catch(IOException ei){
+				JOptionPane.showMessageDialog(Main.this, "ERROR" + ei.getMessage());
+			}
+			
+			
+		}
+	}
+	
 	private void addPlace(Place p) {
 		placeByMapPosition.put(p.getPosition(), p);
 
