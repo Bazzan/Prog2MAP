@@ -1,7 +1,6 @@
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -12,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.List;
 import javax.swing.filechooser.FileFilter;
-
+import javax.swing.event.*;
 import javax.swing.filechooser.*;
 
 public class Main extends JFrame {
@@ -76,7 +75,7 @@ public class Main extends JFrame {
 		
 		JMenuItem save = new JMenuItem("Save");
 		archiveMenu.add(save);
-		//save.addActionListener(new SaveLiss);
+		save.addActionListener(new SaveLiss());
 		JMenuItem exit = new JMenuItem("Exit");
 		archiveMenu.add(exit);
 		// exit.addActionListener(new ExitLiss);
@@ -116,6 +115,7 @@ public class Main extends JFrame {
 
 		centerP.setLayout(new BorderLayout());
 		centerP.setBorder(new EmptyBorder(4,4,4,4));
+		
 		add(centerP, BorderLayout.CENTER);
 		centerP.addMouseListener(new ClickedLiss());
 		
@@ -152,7 +152,7 @@ public class Main extends JFrame {
 		setVisible(true);
 
 	}
-//TODO: kolla om de ska vara omarkerade när man tar fram dom igen
+//TODO: kolla om de ska vara omarkerade nï¿½r man tar fram dom igen
 	class ClickedLiss extends MouseAdapter{
 		public void mouseClicked(MouseEvent e) {
 			System.out.println("clicked");
@@ -261,7 +261,7 @@ public class Main extends JFrame {
 						}
 
 						String name = nf.getName();
-						namePlace = new NamePlace(name, mp, cg);
+						namePlace = new NamePlace(name,mp,cg);
 						addPlace(namePlace);
 						System.out.println(namePlace + " added");
 
@@ -289,7 +289,7 @@ public class Main extends JFrame {
 						String name = df.getName();
 						String description = df.getDescription();
 
-						describedPlace = new DescribedPlace(description, name, mp, cg);
+						describedPlace = new DescribedPlace(description,name,mp,cg);
 						addPlace(describedPlace);
 						System.out.println(describedPlace + " added");
 						break;
@@ -342,7 +342,36 @@ public class Main extends JFrame {
 		}
 
 	}
-
+	
+	class SaveLiss implements ActionListener{
+		public void actionPerformed(ActionEvent ave) {
+			int answer = jfc.showSaveDialog(Main.this);
+			if (answer != JFileChooser.APPROVE_OPTION) {
+				return;
+			}
+			
+			File file = jfc.getSelectedFile();
+			String path = file.getAbsolutePath();
+			
+			try {
+				FileWriter outFile = new FileWriter(path);
+				PrintWriter out = new PrintWriter(outFile);
+				
+				for(Place place : placeByMapPosition.values()) {
+					
+					out.println(place);
+				}
+				out.close();
+				outFile.close();
+				changed = false;
+			}catch (FileNotFoundException e) {
+				JOptionPane.showMessageDialog(Main.this, "File not found");
+			}catch (IOException ei) {
+				JOptionPane.showMessageDialog(Main.this, "ERROR" + ei.getMessage());
+			}
+		}
+	}
+	
 	class LoadPlacesLiss implements ActionListener{
 		public void actionPerformed(ActionEvent ave) {
 			Place loadedPlaces = null;
@@ -430,7 +459,6 @@ public class Main extends JFrame {
 		}
 		sameName.add(place);
 		System.out.println(place);
-//		cgPlace.get(place.getCategory()).add(place);
 		cgPlace.get(place.getCategory()).add(place);
 		changed = true;
 		System.out.println(place);

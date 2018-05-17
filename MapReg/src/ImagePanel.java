@@ -78,25 +78,26 @@ public class ImagePanel extends JPanel {
 	public void unMark() {
 		for (Place place : placesMarked) {
 			place.setIsMarked(false);
-			
-			placesMarked.clear();
-			repaint();
 		}
+		placesMarked.clear();
+		repaint();
 	}
 	
 	public void triangelHide() {
 		for(Place place : placesMarked) {
 			place.setVisible(false);
-			System.out.println("trihide");
+			
 		}
+		System.out.println("trihide");
 	}
 	
 	public void cgHide(Set<Place> places) {
 		this.unMark();
 		for(Place place: places) {
 			this.markIt(place);
-			System.out.println("cghide");
 		}
+		System.out.println("cghide");
+
 		this.triangelHide();
 		this.repaint();
 	}

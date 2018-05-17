@@ -14,7 +14,7 @@ public class DescribedPlace extends Place {
 	}
 
 	public String toString() {
-		return "Described place: " + getCategory() + ", " + getCordinates() + ", " + getName() + ", " + description;
+		return "Described," + getCategory() + "," + getCordinates() + "," + getName() + "," + description;
 	}
 
 }
