@@ -67,6 +67,9 @@ public class ImagePanel extends JPanel {
 			}
 		}
 	}
+
+	
+	
 	public void markIt(Place place) {
 		place.setIsMarked(true);
 		placesMarked.add(place);

@@ -4,6 +4,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -11,10 +12,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.List;
 import javax.swing.filechooser.FileFilter;
+
+//import Main.ListListener;
+
 import javax.swing.event.*;
 import javax.swing.filechooser.*;
 
 public class Main extends JFrame {
+	//TODO: tar bort de gamla inladdade platserna och dialogfönster på det. 
+	
 	private Place place;
 
 	private Category[] cg = { Category.Train, Category.Bus, Category.Underground };
@@ -79,7 +85,7 @@ public class Main extends JFrame {
 		save.addActionListener(new SaveLiss());
 		JMenuItem exit = new JMenuItem("Exit");
 		archiveMenu.add(exit);
-		// exit.addActionListener(new ExitLiss);
+		exit.addActionListener(new ExitLiss());
 		// Archive end
 
 		// Upper buttons
@@ -149,14 +155,35 @@ public class Main extends JFrame {
 
 
 
-		// ip.mouseDown(arg0, arg1, arg2)
-
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		addWindowListener(new ExitLiss());
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setSize(700, 600);
 		setLocationRelativeTo(null);
 		setVisible(true);
 
 	}
+	class ExitLiss extends WindowAdapter implements ActionListener{
+		private void close() {
+			if (changed) {
+				int answer = JOptionPane.showConfirmDialog(Main.this, "You might have unsaved changes, do you want to continue?",
+					"Warning", JOptionPane.OK_CANCEL_OPTION);
+				if (answer == JOptionPane.OK_OPTION) {
+					System.exit(0);
+				}
+			} else
+				System.exit(0);
+		}
+		@Override
+		public void windowClosing(WindowEvent wev) {
+			close();
+			
+		}
+		public void actionPerformed(ActionEvent ave) {
+			close();
+		}
+	}
+	
+	
 	class RemoveButtonLiss implements ActionListener{
 		public void actionPerformed (ActionEvent ave) {
 			List<Place> placesRemoved = ip.removeMarked();
@@ -166,6 +193,7 @@ public class Main extends JFrame {
 		}
 	}
 	
+
 	private void removePlace(Place place) {
 		placeByMapPosition.remove(place.getPosition(), place);
 		String name = place.getName();
@@ -222,6 +250,7 @@ public class Main extends JFrame {
 						ip.unMark();
 						place.setVisible(true);
 						ip.markIt(place);
+						 
 						break;
 					}
 				} catch (NumberFormatException e) {
@@ -410,10 +439,36 @@ public class Main extends JFrame {
 		}
 
 	}
+    public void reset() {
+        placeByName = null;
+        cgPlace = null;
+        placeByMapPosition = null;
+        
+        placeByName = new HashMap<String, List<Place>>();
+        
+        cgPlace = new HashMap<Category, Set<Place>>();
+		cgPlace.put(Category.Bus, new HashSet<>());
+		cgPlace.put(Category.Underground, new HashSet<>());
+		cgPlace.put(Category.Train, new HashSet<>());
+		cgPlace.put(Category.None, new HashSet<>());
+        
+		placeByMapPosition = new HashMap<Position, Place>();
 
+    //TODO: map.ket
+    
+    } 
 
 	class NewMapLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
+			
+			if (changed || mapDisplaying) {
+				int answer = JOptionPane.showConfirmDialog(Main.this, "You might have unsaved changes, do you want to continue?",
+					"Warning", JOptionPane.OK_CANCEL_OPTION);
+				if (answer != JOptionPane.OK_OPTION) {
+					return;
+				}
+//            	reset();
+			}
 			
 			FileFilter ff = new FileNameExtensionFilter("Images", "jpg", "png", "gif");
 			jfc.setFileFilter(ff);
@@ -424,7 +479,12 @@ public class Main extends JFrame {
 			if (answer != JFileChooser.APPROVE_OPTION) {
 				return;
 			}
+			
 
+			
+			changed = false;
+			placesLoaded = false;
+			
 			File file = jfc.getSelectedFile();
 			String path = file.getAbsolutePath();
 
@@ -473,6 +533,12 @@ public class Main extends JFrame {
 		}
 	}
 	
+	public void removeAllFromLists() {
+		placeByMapPosition.clear();
+		cgPlace.clear();
+		placeByName.clear();
+	}
+	
 	class LoadPlacesLiss implements ActionListener{
 		public void actionPerformed(ActionEvent ave) {
 			Place loadedPlaces = null;
@@ -480,23 +546,26 @@ public class Main extends JFrame {
 			FileFilter ff = new FileNameExtensionFilter("Text Files", "txt");
 			jfc.setFileFilter(ff);
 			
-			// TODO: check if you want to save
 			if (placesLoaded && changed) {
 				int answer = JOptionPane.showConfirmDialog(Main.this, "Unsaved changes, do you want to continue anyways?",
 					"Warning", JOptionPane.OK_CANCEL_OPTION);
 				if (answer != JOptionPane.OK_OPTION) {
 					return;
 				}
+//				reset();
 			}
-//			File foalder = new File();
-//			jfc = new JFileChooser();
-//			
-//			
-//			
+
+			
 			int answer = jfc.showOpenDialog(Main.this);
 			if (answer != JFileChooser.APPROVE_OPTION) {
 				return;
 			}
+			
+			// TODO: check if you want to save
+
+			
+
+
 			
 			File file = jfc.getSelectedFile();
 			String path = file.getAbsolutePath();
@@ -505,6 +574,9 @@ public class Main extends JFrame {
 				FileReader inFile = new FileReader(path);
 				BufferedReader in = new BufferedReader(inFile);
 				String line;
+				
+
+				
 				
 				while ((line = in.readLine()) != null) {
 					String[] token = line.split(","); //splitting on ,
@@ -530,18 +602,20 @@ public class Main extends JFrame {
 						addPlace(loadedPlaces);
 					}
 					placesLoaded = true;
+					
 				}
 				changed = false;
 				
 				in.close();
 				inFile.close();
+				
 			}catch (FileNotFoundException e) {
 				JOptionPane.showMessageDialog(Main.this, "File can't be opened");
 			}catch(IOException ei){
 				JOptionPane.showMessageDialog(Main.this, "ERROR" + ei.getMessage());
 			}
 			
-			
+		
 		}
 	}
 	//TODO: addplace
