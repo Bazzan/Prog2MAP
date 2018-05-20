@@ -40,6 +40,7 @@ public class Main extends JFrame {
 	JButton hideButton = new JButton("Hide");
 	JButton searchButton = new JButton("Search");
 	JTextField searchField = new JTextField("Search", 10);
+	
 	// right buttons and stuff
 	JButton hideCG = new JButton("Hide");
 	
@@ -104,13 +105,17 @@ public class Main extends JFrame {
 		upP.add(searchField);
 
 		upP.add(searchButton);
-
+		searchButton.addActionListener(new SearchButtonLiss());
+		
 		upP.add(hideButton);
 		hideButton.addActionListener(new HideButtonLiss());
 		
 		upP.add(removeButton);
-
+		removeButton.addActionListener(new RemoveButtonLiss());
+		
+		
 		upP.add(cordButton);
+		cordButton.addActionListener(new CoordinateLiss());
 		// end Upper buttons
 
 		centerP.setLayout(new BorderLayout());
@@ -147,11 +152,110 @@ public class Main extends JFrame {
 		// ip.mouseDown(arg0, arg1, arg2)
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(600, 500);
+		setSize(700, 600);
 		setLocationRelativeTo(null);
 		setVisible(true);
 
 	}
+	class RemoveButtonLiss implements ActionListener{
+		public void actionPerformed (ActionEvent ave) {
+			List<Place> placesRemoved = ip.removeMarked();
+			for(Place place : placesRemoved) {
+				removePlace(place);
+			}
+		}
+	}
+	
+	private void removePlace(Place place) {
+		placeByMapPosition.remove(place.getPosition(), place);
+		String name = place.getName();
+		List<Place> sameName = placeByName.get(name);
+		sameName.remove(place);
+		
+		if(sameName.isEmpty()) {
+			placeByName.remove(name);
+			
+		}
+		cgPlace.get(place.getCategory()).remove(place);
+		changed = true;
+		
+	}
+	
+	
+	class CoordinateLiss implements ActionListener{
+		public void actionPerformed(ActionEvent ave) {
+			CordFormular cf = new CordFormular();
+			System.out.println("12");
+			while (true) {
+				int answer = JOptionPane.showConfirmDialog(null, cf, "Coordinates", JOptionPane.OK_CANCEL_OPTION);
+				if (answer == 2 || answer == -1) {
+					break;
+				}
+				try {
+					System.out.println("1");
+					if (cf.getXText() == null || cf.getXText().equals("")) {
+						JOptionPane.showMessageDialog(null, "Insert X-coordinates", "ERROR", JOptionPane.ERROR_MESSAGE);
+					} else if (cf.getYText() == null || cf.getYText().equals("")) {
+						JOptionPane.showMessageDialog(null, "Insert Y-coordinates", "ERROR", JOptionPane.ERROR_MESSAGE);
+					} else if (cf.getXCoordinate() < 0) {
+						JOptionPane.showMessageDialog(null, "Coordinates can't be lower than zero", "ERROR",
+								JOptionPane.ERROR_MESSAGE);
+						continue;
+					} else if (cf.getYCoordinate() < 0) {
+						JOptionPane.showMessageDialog(null, "Coordinates can't be lower than zero", "ERROR",
+								JOptionPane.ERROR_MESSAGE);
+						continue;
+					}
+					System.out.println("13");
+					
+					int xC = cf.getXCoordinate();
+					int yC = cf.getYCoordinate();
+
+					Position testPos = new Position(xC, yC);
+					Place place = checkPoss(testPos);
+
+					if (place == null) {
+						JOptionPane.showMessageDialog(null, "There is not place with those coordinates.", "ERROR",
+								JOptionPane.ERROR_MESSAGE);
+						break;
+					} else {
+						ip.unMark();
+						place.setVisible(true);
+						ip.markIt(place);
+						break;
+					}
+				} catch (NumberFormatException e) {
+					JOptionPane.showMessageDialog(null, "Wrong format", "ERROR", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}
+	}
+	
+	public Place checkPoss(Position testPos){
+		System.out.println(testPos);
+		return placeByMapPosition.get(testPos);
+	}
+	
+	class SearchButtonLiss implements ActionListener{
+		public void actionPerformed(ActionEvent ave) {
+			String searchStr = searchField.getText();
+			
+			List<Place> sameName = placeByName.get(searchStr);
+			
+			if (sameName == null) {
+				JOptionPane.showMessageDialog(null, "No place with that name", "ERROR", JOptionPane.ERROR_MESSAGE);
+				searchField.setText("Search");
+				return;
+			}else {
+				ip.unMark();
+				for(Place place : sameName) {
+					place.setVisible(true);
+					ip.markIt(place);
+				}
+			}
+		}
+	}
+	
 //TODO: kolla om de ska vara omarkerade n�r man tar fram dom igen
 	class ClickedLiss extends MouseAdapter{
 		public void mouseClicked(MouseEvent e) {
@@ -307,10 +411,7 @@ public class Main extends JFrame {
 
 	}
 
-	// Public Place testPosition(Position tPos) {
-	// System.out.println("tPos" + tPos.getMapPosition());
-	// return placeByPosition.get(tPos);
-	// }
+
 	class NewMapLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
 			

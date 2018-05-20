@@ -112,6 +112,16 @@ public class ImagePanel extends JPanel {
 		
 	}
 	
+	public List<Place> removeMarked() {
+		for(Place place : placesMarked) {
+			this.remove(place);
+		}
+		List<Place> removeMarkedPlaces = new LinkedList(placesMarked);
+		placesMarked.clear();
+		this.repaint();
+		return removeMarkedPlaces;
+	}
+	
 	
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);

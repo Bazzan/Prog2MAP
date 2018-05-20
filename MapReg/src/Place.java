@@ -59,7 +59,7 @@ public class Place extends JComponent {
 		if(marked) {
 			g.setColor(c);
 			g.fillPolygon(xs, ys, 3);
-			g.setColor(Color.BLACK);
+			g.setColor(Color.WHITE);
 			g2d.setStroke(new BasicStroke(3));
 			g.drawPolygon(xs, ys, 3);
 		}else {
