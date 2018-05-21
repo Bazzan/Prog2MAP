@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,7 +24,7 @@ import javax.swing.filechooser.*;
 public class Main extends JFrame {
 	//TODO: tar bort de gamla inladdade platserna och dialogfönster på det. 
 	
-	private Place place;
+
 
 	private Category[] cg = { Category.Train, Category.Bus, Category.Underground };
 	private JList<Category> cgList;
@@ -448,21 +449,23 @@ public class Main extends JFrame {
 //	public void removeSet() {
 //	removeSet(selectedList);
 //}
+	
     public void removeAllPlaces(Set<Place> hs){
         Set<Place> temp = new HashSet<>();
+        cgList.getSelectedValuesList();
         temp.addAll(hs);
         for(Place p: temp){
-            removePlace(p);
+            this.removePlace(p);
         }
     }
-    public void ding() {
-        for(Iterator<Map.Entry<String, List<Place>>> it = placeByName.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<String, List<Place>> entry = it.next();
-            if(entry.getKey() != null) {
-              it.remove();
-            }
-    }
-    }
+//    public void ding() {
+//        for(Iterator<Map.Entry<String, List<Place>>> it = placeByName.entrySet().iterator(); it.hasNext(); ) {
+//            Map.Entry<String, List<Place>> entry = it.next();
+//            if(entry.getKey() != null) {
+//              it.remove();
+//            }
+//    }
+//    }
 //    public void ding1() {
 //        for(Iterator<Map.Entry<Category, Set<Place>>> it = cgPlace.entrySet().iterator(); it.hasNext(); ) {
 //            Map.Entry<Category, List<Place>> entry = it.next();
@@ -488,6 +491,12 @@ public class Main extends JFrame {
 //    	}
 //    }
 //    }
+	public void clearLists() {
+		
+		placeByMapPosition.clear();
+		cgPlace.clear();
+		placeByName.clear();
+	}
     public void reset() {
 //    	for(Iterator it = placeByMapPosition.entrySet().iterator(); it.hasNext();) {
 //    		Map.Entry<String, Place> entry = (Entry<String, Place>) it.next();
@@ -503,32 +512,50 @@ public class Main extends JFrame {
 //		}
 //		ip.cgHide(places);
 //    	
-		ip.markAll();
-		ip.removeMarked();
-
-		ip.ipRemovePlace(place);
-    	placeByName.clear();
-    	placeByMapPosition.clear();
-    	cgPlace.clear();
-
-		System.out.println(placeByName);
-		System.out.println(placeByMapPosition);
-		System.out.println(cgPlace);
-    	
-//        placeByName = new HashMap<String, List<Place>>();
+//      placeByName = new HashMap<String, List<Place>>();
 //		placeByMapPosition = new HashMap<Position, Place>();
-//        cgPlace = new HashMap<Category, Set<Place>>();
+//      cgPlace = new HashMap<Category, Set<Place>>();
 //		
-        cgPlace.put(Category.Bus, new HashSet<>());
-		cgPlace.put(Category.Underground, new HashSet<>());
-		cgPlace.put(Category.Train, new HashSet<>());
-		cgPlace.put(Category.None, new HashSet<>());
-        
+//      
+//    	ip.markAll();
+//		ip.removeMarked();
+//
+//		
+//    	clearLists();
+//
+//		System.out.println(placeByName);
+//		System.out.println(placeByMapPosition);
+//		System.out.println(cgPlace);
+//    	
+//		cgPlace.put(Category.Bus, new HashSet<>());
+//		cgPlace.put(Category.Underground, new HashSet<>());
+//		cgPlace.put(Category.Train, new HashSet<>());
+//		cgPlace.put(Category.None, new HashSet<>());
+//        
 
-
+    	
+    	
+    	
     //TODO: map.ket
     
-    } 
+    }
+    public void removeSelected() {
+        Set<Place> hs = new HashSet<>(placeByMapPosition.values());
+
+    	removeSet(hs);
+    }
+    
+    public void removeSet(Set<Place> hs){
+        Set<Place> temp = new HashSet<>(hs);
+        temp.addAll(hs);
+        for(Place p: temp){
+            removePlace(p);
+        }
+    }
+//    public <placeByName> void removeStuff(Place place){
+//    	place = placeByMapPosition.values();
+//    	
+//    }
 
 	class NewMapLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
@@ -544,7 +571,8 @@ public class Main extends JFrame {
 //				removeIter(placeByMapPosition);
 //				System.out.println("removed?");
 //				System.out.println(cgPlace);
-				reset();
+//				reset();
+				removeSelected();
 				System.out.println(placeByName);
 				System.out.println(placeByMapPosition);
 				System.out.println(cgPlace);
@@ -618,11 +646,7 @@ public class Main extends JFrame {
 		}
 	}
 	
-	public void removeAllFromLists() {
-		placeByMapPosition.clear();
-		cgPlace.clear();
-		placeByName.clear();
-	}
+
 	
 	class LoadPlacesLiss implements ActionListener{
 		public void actionPerformed(ActionEvent ave) {
@@ -637,7 +661,8 @@ public class Main extends JFrame {
 				if (answer != JOptionPane.OK_OPTION) {
 					return;
 				}
-				reset();
+//				reset();
+//				removeSelected();
 				System.out.println(placeByName);
 				System.out.println(placeByMapPosition);
 				System.out.println(cgPlace);
