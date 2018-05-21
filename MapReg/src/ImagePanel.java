@@ -26,6 +26,9 @@ public class ImagePanel extends JPanel {
 
 		
 	}
+	public void ipRemovePlace(Place place) {
+		this.remove(place);
+	}
 	
 	public void addTriangle(Place place) {
 		Position position = place.getPosition();
@@ -67,6 +70,12 @@ public class ImagePanel extends JPanel {
 			}
 		}
 	}
+	
+	public void markAll() {
+		for(Place place : placesMarked) {
+			placesMarked.add(place);
+		}
+	}
 
 	
 	
@@ -77,6 +86,7 @@ public class ImagePanel extends JPanel {
 		System.out.println("MarkIt");
 		
 	}
+
 	
 	public void unMark() {
 		for (Place place : placesMarked) {

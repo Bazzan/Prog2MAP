@@ -7,8 +7,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.List;
 import javax.swing.filechooser.FileFilter;
@@ -438,21 +440,91 @@ public class Main extends JFrame {
 
 		}
 
+		
+
+
+		
 	}
+//	public void removeSet() {
+//	removeSet(selectedList);
+//}
+    public void removeAllPlaces(Set<Place> hs){
+        Set<Place> temp = new HashSet<>();
+        temp.addAll(hs);
+        for(Place p: temp){
+            removePlace(p);
+        }
+    }
+    public void ding() {
+        for(Iterator<Map.Entry<String, List<Place>>> it = placeByName.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<String, List<Place>> entry = it.next();
+            if(entry.getKey() != null) {
+              it.remove();
+            }
+    }
+    }
+//    public void ding1() {
+//        for(Iterator<Map.Entry<Category, Set<Place>>> it = cgPlace.entrySet().iterator(); it.hasNext(); ) {
+//            Map.Entry<Category, List<Place>> entry = it.next();
+//            if(entry.getKey() != null) {
+//              it.remove();
+//            }
+//    }
+//    } 
+//    public void removeIter(Map map) {
+//    	if(Map map.)
+//	    	Iterator it = map.entrySet().iterator();
+//	    	while(it.hasNext()) {
+//	    		ip.markIt(place);
+//	    		ip.removeMarked();
+//	    	}
+//    }
+//    public void removeIter(Map map) {
+//    	for(Iterator<Place> it = map.entrySet().iterator()) {
+//    		
+//    		while(it.hasNext() || it instanceof Place) {
+//    			it.remove();
+//    		
+//    	}
+//    }
+//    }
     public void reset() {
-        placeByName = null;
-        cgPlace = null;
-        placeByMapPosition = null;
-        
-        placeByName = new HashMap<String, List<Place>>();
-        
-        cgPlace = new HashMap<Category, Set<Place>>();
-		cgPlace.put(Category.Bus, new HashSet<>());
+//    	for(Iterator it = placeByMapPosition.entrySet().iterator(); it.hasNext();) {
+//    		Map.Entry<String, Place> entry = (Entry<String, Place>) it.next();
+//    		while(entry.getKey() != null) {
+//        		ip.markIt(entry);
+//        	}
+//  	}
+//		Category c = cgList.
+//
+//		Set<Place> places = cgPlace.get(c);
+//		if (c == null) {
+//			places = cgPlace.get(Category.None);
+//		}
+//		ip.cgHide(places);
+//    	
+		ip.markAll();
+		ip.removeMarked();
+
+		ip.ipRemovePlace(place);
+    	placeByName.clear();
+    	placeByMapPosition.clear();
+    	cgPlace.clear();
+
+		System.out.println(placeByName);
+		System.out.println(placeByMapPosition);
+		System.out.println(cgPlace);
+    	
+//        placeByName = new HashMap<String, List<Place>>();
+//		placeByMapPosition = new HashMap<Position, Place>();
+//        cgPlace = new HashMap<Category, Set<Place>>();
+//		
+        cgPlace.put(Category.Bus, new HashSet<>());
 		cgPlace.put(Category.Underground, new HashSet<>());
 		cgPlace.put(Category.Train, new HashSet<>());
 		cgPlace.put(Category.None, new HashSet<>());
         
-		placeByMapPosition = new HashMap<Position, Place>();
+
 
     //TODO: map.ket
     
@@ -460,15 +532,26 @@ public class Main extends JFrame {
 
 	class NewMapLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
-			
 			if (changed || mapDisplaying) {
 				int answer = JOptionPane.showConfirmDialog(Main.this, "You might have unsaved changes, do you want to continue?",
 					"Warning", JOptionPane.OK_CANCEL_OPTION);
 				if (answer != JOptionPane.OK_OPTION) {
 					return;
 				}
-//            	reset();
+
+				
+//				removeIter(placeByName);
+//				removeIter(placeByMapPosition);
+//				System.out.println("removed?");
+//				System.out.println(cgPlace);
+				reset();
+				System.out.println(placeByName);
+				System.out.println(placeByMapPosition);
+				System.out.println(cgPlace);
+
 			}
+//			ding(placeByName);
+
 			
 			FileFilter ff = new FileNameExtensionFilter("Images", "jpg", "png", "gif");
 			jfc.setFileFilter(ff);
@@ -494,7 +577,9 @@ public class Main extends JFrame {
 			ip = new ImagePanel(path);
 			scroll = new JScrollPane(ip);
 			centerP.add(scroll, BorderLayout.CENTER);
+			
 
+			
 			mapDisplaying = true; // bool för att kolla om kartan är laddad
 
 			validate();
@@ -546,13 +631,16 @@ public class Main extends JFrame {
 			FileFilter ff = new FileNameExtensionFilter("Text Files", "txt");
 			jfc.setFileFilter(ff);
 			
-			if (placesLoaded && changed) {
+			if (placesLoaded || changed) {
 				int answer = JOptionPane.showConfirmDialog(Main.this, "Unsaved changes, do you want to continue anyways?",
 					"Warning", JOptionPane.OK_CANCEL_OPTION);
 				if (answer != JOptionPane.OK_OPTION) {
 					return;
 				}
-//				reset();
+				reset();
+				System.out.println(placeByName);
+				System.out.println(placeByMapPosition);
+				System.out.println(cgPlace);
 			}
 
 			
@@ -618,7 +706,6 @@ public class Main extends JFrame {
 		
 		}
 	}
-	//TODO: addplace
 	
 	private void addPlace(Place place) {
 		placeByMapPosition.put(place.getPosition(), place);
@@ -633,9 +720,9 @@ public class Main extends JFrame {
 			placeByName.put(name, sameName);
 		}
 		sameName.add(place);
-		System.out.println(place);
 		cgPlace.get(place.getCategory()).add(place);
 		changed = true;
+		System.out.println(changed);
 		System.out.println(place);
 
 	}
