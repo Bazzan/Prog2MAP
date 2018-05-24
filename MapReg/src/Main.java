@@ -17,7 +17,7 @@ import java.util.List;
 import javax.swing.filechooser.FileFilter;
 
 //import Main.ListListener;
-
+//TODO: kanske är awt importen som tar över. den gör LIST not generic error
 import javax.swing.event.*;
 import javax.swing.filechooser.*;
 
