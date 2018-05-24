@@ -262,15 +262,7 @@ public class Main extends JFrame {
 			}
 		}
 	}
-//	public void removeByCord(Map mp) {
-//        Set<Place> temp = new HashSet<>();
-//		temp.addAll(placeByMapPosition)
-//		Iterator it = placeByMapPosition.keySet().iterator();
-//		for(Position pos : mp.keySet() {
-//			
-//		}
-//	}
-
+	
 	public Place checkPoss(Position testPos){
 		System.out.println(testPos);
 		return placeByMapPosition.get(testPos);
@@ -670,7 +662,7 @@ public class Main extends JFrame {
 					return;
 				}
 //				reset();
-				removeSelected();
+//				removeSelected();
 				System.out.println(placeByName);
 				System.out.println(placeByMapPosition);
 				System.out.println(cgPlace);
