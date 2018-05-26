@@ -4,28 +4,25 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.List;
 import javax.swing.filechooser.FileFilter;
-
-//import Main.ListListener;
-//TODO: kanske är awt importen som tar över. den gör LIST not generic error
-import javax.swing.event.*;
 import javax.swing.filechooser.*;
 
 public class Main extends JFrame {
-	//TODO: tar bort de gamla inladdade platserna och dialogfÃ¶nster pÃ¥ det. 
-	
+	// TODO: tar bort de gamla inladdade platserna och dialogfÃ¶nster pÃ¥ det.
 
-
+	/**
+	 * 	 * Sebastian Åkerlund - 1995-10-01
+	 * seae5393
+	 * sebake01@gmail.com
+	 */
+	private static final long serialVersionUID = 1L;
 	private Category[] cg = { Category.Train, Category.Bus, Category.Underground };
 	private JList<Category> cgList;
 
@@ -49,25 +46,24 @@ public class Main extends JFrame {
 	JButton hideButton = new JButton("Hide");
 	JButton searchButton = new JButton("Search");
 	JTextField searchField = new JTextField("Search", 10);
-	
+
 	// right buttons and stuff
 	JButton hideCG = new JButton("Hide");
-	
+
 	JPanel centerP = new JPanel();
 
 	private boolean mapDisplaying = false;
 	private boolean changed = false;
-	private boolean placesLoaded= false;
-	
+	private boolean placesLoaded = false;
+
 	public Main() {
 		super("Main");
-		
+
 		cgPlace.put(Category.Bus, new HashSet<>());
 		cgPlace.put(Category.Underground, new HashSet<>());
 		cgPlace.put(Category.Train, new HashSet<>());
 		cgPlace.put(Category.None, new HashSet<>());
-		
-		
+
 		JMenuBar mbar = new JMenuBar();
 		setJMenuBar(mbar);
 
@@ -78,11 +74,11 @@ public class Main extends JFrame {
 		JMenuItem newMap = new JMenuItem("New Map");
 		archiveMenu.add(newMap);
 		newMap.addActionListener(new NewMapLiss());
-		
+
 		JMenuItem loadPlaces = new JMenuItem("Load Places");
 		archiveMenu.add(loadPlaces);
 		loadPlaces.addActionListener(new LoadPlacesLiss());
-		
+
 		JMenuItem save = new JMenuItem("Save");
 		archiveMenu.add(save);
 		save.addActionListener(new SaveLiss());
@@ -115,48 +111,43 @@ public class Main extends JFrame {
 
 		upP.add(searchButton);
 		searchButton.addActionListener(new SearchButtonLiss());
-		
+
 		upP.add(hideButton);
 		hideButton.addActionListener(new HideButtonLiss());
-		
+
 		upP.add(removeButton);
 		removeButton.addActionListener(new RemoveButtonLiss());
-		
-		
+
 		upP.add(cordButton);
 		cordButton.addActionListener(new CoordinateLiss());
 		// end Upper buttons
 
 		centerP.setLayout(new BorderLayout());
-		centerP.setBorder(new EmptyBorder(4,4,4,4));
-		
+		centerP.setBorder(new EmptyBorder(4, 4, 4, 4));
+
 		add(centerP, BorderLayout.CENTER);
 		centerP.addMouseListener(new ClickedLiss());
-		
+
 		// right Panel
 		JPanel rightP = new JPanel();
 		rightP.setLayout(new BoxLayout(rightP, BoxLayout.Y_AXIS));
 		rightP.setBorder(new EmptyBorder(4, 4, 4, 4));
 		add(rightP, BorderLayout.EAST);
-		
+
 		JLabel cgLabel = new JLabel("Categories");
 		rightP.add(cgLabel);
 
-		
-		
 		// right buttons
 		cgList = new JList<>(cg);
-		
+
 		rightP.add(cgList);
 		cgList.addMouseListener(new CategoryLiss());
-		
+
 		JScrollPane cgScroll = new JScrollPane(cgList);
 		rightP.add(cgScroll);
-		
+
 		rightP.add(hideCG);
 		hideCG.addActionListener(new HideCGLiss());
-
-
 
 		addWindowListener(new ExitLiss());
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -165,55 +156,56 @@ public class Main extends JFrame {
 		setVisible(true);
 
 	}
-	class ExitLiss extends WindowAdapter implements ActionListener{
+
+	class ExitLiss extends WindowAdapter implements ActionListener {
 		private void close() {
 			if (changed) {
-				int answer = JOptionPane.showConfirmDialog(Main.this, "You might have unsaved changes, do you want to continue?",
-					"Warning", JOptionPane.OK_CANCEL_OPTION);
+				int answer = JOptionPane.showConfirmDialog(Main.this,
+						"You might have unsaved changes, do you want to continue?", "Warning",
+						JOptionPane.OK_CANCEL_OPTION);
 				if (answer == JOptionPane.OK_OPTION) {
 					System.exit(0);
 				}
 			} else
 				System.exit(0);
 		}
+
 		@Override
 		public void windowClosing(WindowEvent wev) {
 			close();
-			
+
 		}
+
 		public void actionPerformed(ActionEvent ave) {
 			close();
 		}
 	}
-	
-	
-	class RemoveButtonLiss implements ActionListener{
-		public void actionPerformed (ActionEvent ave) {
+
+	class RemoveButtonLiss implements ActionListener {
+		public void actionPerformed(ActionEvent ave) {
 			List<Place> placesRemoved = ip.removeMarked();
-			for(Place place : placesRemoved) {
+			for (Place place : placesRemoved) {
 				removePlace(place);
 			}
 		}
 	}
-	
 
 	private void removePlace(Place place) {
 		placeByMapPosition.remove(place.getPosition(), place);
 		String name = place.getName();
 		List<Place> sameName = placeByName.get(name);
 		sameName.remove(place);
-		
-		if(sameName.isEmpty()) {
+
+		if (sameName.isEmpty()) {
 			placeByName.remove(name);
-			
+
 		}
 		cgPlace.get(place.getCategory()).remove(place);
 		changed = true;
-		
+
 	}
-	
-	
-	class CoordinateLiss implements ActionListener{
+
+	class CoordinateLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
 			CordFormular cf = new CordFormular();
 			System.out.println("12");
@@ -238,7 +230,7 @@ public class Main extends JFrame {
 						continue;
 					}
 					System.out.println("13");
-					
+
 					int xC = cf.getXCoordinate();
 					int yC = cf.getYCoordinate();
 
@@ -253,7 +245,7 @@ public class Main extends JFrame {
 						ip.unMark();
 						place.setVisible(true);
 						ip.markIt(place);
-						 
+
 						break;
 					}
 				} catch (NumberFormatException e) {
@@ -262,84 +254,81 @@ public class Main extends JFrame {
 			}
 		}
 	}
-	
-	public Place checkPoss(Position testPos){
+
+	public Place checkPoss(Position testPos) {
 		System.out.println(testPos);
 		return placeByMapPosition.get(testPos);
 	}
-	
-	class SearchButtonLiss implements ActionListener{
+
+	class SearchButtonLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
 			String searchStr = searchField.getText();
-			
+
 			List<Place> sameName = placeByName.get(searchStr);
-			
+
 			if (sameName == null) {
 				JOptionPane.showMessageDialog(null, "No place with that name", "ERROR", JOptionPane.ERROR_MESSAGE);
 				searchField.setText("Search");
 				return;
-			}else {
+			} else {
 				ip.unMark();
-				for(Place place : sameName) {
+				for (Place place : sameName) {
 					place.setVisible(true);
 					ip.markIt(place);
 				}
 			}
 		}
 	}
-	
-//TODO: kolla om de ska vara omarkerade nï¿½r man tar fram dom igen
-	class ClickedLiss extends MouseAdapter{
+
+	// TODO: kolla om de ska vara omarkerade nï¿½r man tar fram dom igen
+	class ClickedLiss extends MouseAdapter {
 		public void mouseClicked(MouseEvent e) {
 			System.out.println("clicked");
-			ImagePanel imgP = (ImagePanel)e.getSource();
+			ImagePanel imgP = (ImagePanel) e.getSource();
 			System.out.print("cleared?");
-			
-			if(ip.equals(imgP)) {
-				
+
+			if (ip.equals(imgP)) {
+
 				cgList.clearSelection();
 			}
-		System.out.print("cleared?");
+			System.out.print("cleared?");
 		}
 	}
-	
-	class HideButtonLiss implements ActionListener{
+
+	class HideButtonLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
 			cgList.clearSelection();
 			ip.triangelHide();
 		}
 	}
-	
+
 	class CategoryLiss extends MouseAdapter {
 		public void mouseClicked(MouseEvent e) {
 			Category cg = cgList.getSelectedValue();
-			
 
 			Set<Place> places = cgPlace.get(cg);
-			
-			
+
 			ip.triangleShow(places);
 			System.out.println("Cgliss");
-			
-			
 		}
 	}
-	class HideCGLiss implements ActionListener{
+
+	class HideCGLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
 			Category cg = cgList.getSelectedValue();
 			Set<Place> places = cgPlace.get(cg);
 
-			if ( cg == null) {
+			if (cg == null) {
 				places = cgPlace.get(Category.None);
 			}
 			System.out.println(cg);
 			System.out.println(places);
-			
+
 			ip.cgHide(places);
 			cgList.clearSelection();
-			
+
 			System.out.println("hidecgliss");
-			
+
 		}
 	}
 
@@ -397,7 +386,7 @@ public class Main extends JFrame {
 						}
 
 						String name = nf.getName();
-						namePlace = new NamePlace(name,mp,cg);
+						namePlace = new NamePlace(name, mp, cg);
 						addPlace(namePlace);
 						System.out.println(namePlace + " added");
 
@@ -425,7 +414,7 @@ public class Main extends JFrame {
 						String name = df.getName();
 						String description = df.getDescription();
 
-						describedPlace = new DescribedPlace(description,name,mp,cg);
+						describedPlace = new DescribedPlace(description, name, mp, cg);
 						addPlace(describedPlace);
 						System.out.println(describedPlace + " added");
 						break;
@@ -441,161 +430,38 @@ public class Main extends JFrame {
 
 		}
 
-		
-
-
-		
 	}
-//	public void removeSet() {
-//	removeSet(selectedList);
-//}
-	
-    public void removeAllPlaces(Set<Place> hs){
-        Set<Place> temp = new HashSet<>();
-        cgList.getSelectedValuesList();
-        temp.addAll(hs);
-        for(Place p: temp){
-            this.removePlace(p);
-        }
-    }
-//    public void ding() {
-//        for(Iterator<Map.Entry<String, List<Place>>> it = placeByName.entrySet().iterator(); it.hasNext(); ) {
-//            Map.Entry<String, List<Place>> entry = it.next();
-//            if(entry.getKey() != null) {
-//              it.remove();
-//            }
-//    }
-//    }
-//    public void ding1() {
-//        for(Iterator<Map.Entry<Category, Set<Place>>> it = cgPlace.entrySet().iterator(); it.hasNext(); ) {
-//            Map.Entry<Category, List<Place>> entry = it.next();
-//            if(entry.getKey() != null) {
-//              it.remove();
-//            }
-//    }
-//    } 
-//    public void removeIter(Map map) {
-//    	if(Map map.)
-//	    	Iterator it = map.entrySet().iterator();
-//	    	while(it.hasNext()) {
-//	    		ip.markIt(place);
-//	    		ip.removeMarked();
-//	    	}
-//    }
-//    public void removeIter(Map map) {
-//    	for(Iterator<Place> it = map.entrySet().iterator()) {
-//    		
-//    		while(it.hasNext() || it instanceof Place) {
-//    			it.remove();
-//    		
-//    	}
-//    }
-//    }
-	public void clearLists() {
-		
-		placeByMapPosition.clear();
-		cgPlace.clear();
-		placeByName.clear();
-	}
-    public void reset() {
-//    	for(Iterator it = placeByMapPosition.entrySet().iterator(); it.hasNext();) {
-//    		Map.Entry<String, Place> entry = (Entry<String, Place>) it.next();
-//    		while(entry.getKey() != null) {
-//        		ip.markIt(entry);
-//        	}
-//  	}
-//		Category c = cgList.
-//
-//		Set<Place> places = cgPlace.get(c);
-//		if (c == null) {
-//			places = cgPlace.get(Category.None);
-//		}
-//		ip.cgHide(places);
-//    	
-//      placeByName = new HashMap<String, List<Place>>();
-//		placeByMapPosition = new HashMap<Position, Place>();
-//      cgPlace = new HashMap<Category, Set<Place>>();
-//		
-//      
-//    	ip.markAll();
-//		ip.removeMarked();
-//
-//		
-//    	clearLists();
-//
-//		System.out.println(placeByName);
-//		System.out.println(placeByMapPosition);
-//		System.out.println(cgPlace);
-//    	
-//		cgPlace.put(Category.Bus, new HashSet<>());
-//		cgPlace.put(Category.Underground, new HashSet<>());
-//		cgPlace.put(Category.Train, new HashSet<>());
-//		cgPlace.put(Category.None, new HashSet<>());
-//        
-
-    	
-    	
-    	
-    //TODO: map.ket
-    
-    }
-    public void removeSelected() {
-        Set<Place> hs = new HashSet<>(placeByMapPosition.values());
-
-    	removeSet(hs);
-    }
-    
-    public void removeSet(Set<Place> hs){
-        Set<Place> temp = new HashSet<>(hs);
-        temp.addAll(hs);
-        for(Place p: temp){
-            removePlace(p);
-        }
-    }
-//    public <placeByName> void removeStuff(Place place){
-//    	place = placeByMapPosition.values();
-//    	
-//    }
 
 	class NewMapLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
 			if (changed || mapDisplaying) {
-				int answer = JOptionPane.showConfirmDialog(Main.this, "You might have unsaved changes, do you want to continue?",
-					"Warning", JOptionPane.OK_CANCEL_OPTION);
+				int answer = JOptionPane.showConfirmDialog(Main.this,
+						"You might have unsaved changes, do you want to continue?", "Warning",
+						JOptionPane.OK_CANCEL_OPTION);
 				if (answer != JOptionPane.OK_OPTION) {
 					return;
 				}
 
-				
-//				removeIter(placeByName);
-//				removeIter(placeByMapPosition);
-//				System.out.println("removed?");
-//				System.out.println(cgPlace);
-//				reset();
-				removeSelected();
+				markAllAndRemove();
+				clearLists();
 				System.out.println(placeByName);
 				System.out.println(placeByMapPosition);
 				System.out.println(cgPlace);
 
 			}
-//			ding(placeByName);
 
-			
 			FileFilter ff = new FileNameExtensionFilter("Images", "jpg", "png", "gif");
 			jfc.setFileFilter(ff);
-//			File folder = new File("")
-			
+
 			int answer = jfc.showOpenDialog(Main.this);
 
 			if (answer != JFileChooser.APPROVE_OPTION) {
 				return;
 			}
-			
 
-			
 			changed = false;
 			placesLoaded = false;
-			
+
 			File file = jfc.getSelectedFile();
 			String path = file.getAbsolutePath();
 
@@ -605,9 +471,7 @@ public class Main extends JFrame {
 			ip = new ImagePanel(path);
 			scroll = new JScrollPane(ip);
 			centerP.add(scroll, BorderLayout.CENTER);
-			
 
-			
 			mapDisplaying = true; // bool fÃ¶r att kolla om kartan Ã¤r laddad
 
 			validate();
@@ -616,122 +480,132 @@ public class Main extends JFrame {
 		}
 
 	}
-	
-	class SaveLiss implements ActionListener{
+
+	class SaveLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
 			int answer = jfc.showSaveDialog(Main.this);
 			if (answer != JFileChooser.APPROVE_OPTION) {
 				return;
 			}
-			
+
 			File file = jfc.getSelectedFile();
 			String path = file.getAbsolutePath();
-			
+
 			try {
 				FileWriter outFile = new FileWriter(path);
 				PrintWriter out = new PrintWriter(outFile);
-				
-				for(Place place : placeByMapPosition.values()) {
-					
+
+				for (Place place : placeByMapPosition.values()) {
+
 					out.println(place);
 				}
 				out.close();
 				outFile.close();
 				changed = false;
-			}catch (FileNotFoundException e) {
+			} catch (FileNotFoundException e) {
 				JOptionPane.showMessageDialog(Main.this, "File not found");
-			}catch (IOException ei) {
+			} catch (IOException ei) {
 				JOptionPane.showMessageDialog(Main.this, "ERROR" + ei.getMessage());
 			}
 		}
 	}
-	
 
-	
-	class LoadPlacesLiss implements ActionListener{
+	public void markAllAndRemove() {
+		for (Entry<Position, Place> me : placeByMapPosition.entrySet()) {
+			Place p = me.getValue();
+			ip.placesMarked.add(p);
+			ip.ipRemovePlace(p);
+		}
+	}
+
+	public void clearLists() {
+
+		placeByMapPosition.clear();
+		placeByName.clear();
+		cgPlace.clear();
+
+		cgPlace.put(Category.Bus, new HashSet<>());
+		cgPlace.put(Category.Underground, new HashSet<>());
+		cgPlace.put(Category.Train, new HashSet<>());
+		cgPlace.put(Category.None, new HashSet<>());
+	}
+
+	class LoadPlacesLiss implements ActionListener {
 		public void actionPerformed(ActionEvent ave) {
 			Place loadedPlaces = null;
-			
+
 			FileFilter ff = new FileNameExtensionFilter("Text Files", "txt");
 			jfc.setFileFilter(ff);
-			
+
 			if (placesLoaded || changed) {
-				int answer = JOptionPane.showConfirmDialog(Main.this, "Unsaved changes, do you want to continue anyways?",
-					"Warning", JOptionPane.OK_CANCEL_OPTION);
+				int answer = JOptionPane.showConfirmDialog(Main.this,
+						"Unsaved changes, do you want to continue anyways?", "Warning", JOptionPane.OK_CANCEL_OPTION);
 				if (answer != JOptionPane.OK_OPTION) {
 					return;
 				}
-//				reset();
-//				removeSelected();
+
+				markAllAndRemove();
+				clearLists();
 				System.out.println(placeByName);
 				System.out.println(placeByMapPosition);
 				System.out.println(cgPlace);
 			}
 
-			
 			int answer = jfc.showOpenDialog(Main.this);
 			if (answer != JFileChooser.APPROVE_OPTION) {
 				return;
 			}
-			
+
 			// TODO: check if you want to save
 
-			
-
-
-			
 			File file = jfc.getSelectedFile();
 			String path = file.getAbsolutePath();
-			
+
 			try {
 				FileReader inFile = new FileReader(path);
 				BufferedReader in = new BufferedReader(inFile);
 				String line;
-				
 
-				
-				
 				while ((line = in.readLine()) != null) {
-					String[] token = line.split(","); //splitting on ,
+					String[] token = line.split(","); // splitting on ,
 					String type = token[0];
 					Category cg = Category.parseCategory(token[1]);
 					int x = Integer.parseInt(token[2]);
 					int y = Integer.parseInt(token[3]);
 					Position mp = new Position(x, y);
 					String name = token[4];
-					
+
 					if (type.equals("Described")) {
-						String description = token [5];
-						loadedPlaces = new DescribedPlace(description, name, mp , cg);
-						
-					}else if(type.equals("Named")) {
+						String description = token[5];
+						loadedPlaces = new DescribedPlace(description, name, mp, cg);
+
+					} else if (type.equals("Named")) {
 						loadedPlaces = new NamePlace(name, mp, cg);
-						
-					}else  {
+
+					} else {
 						JOptionPane.showMessageDialog(null, "Not correct file", "ERROR", JOptionPane.ERROR_MESSAGE);
 						loadedPlaces = null;
 					}
-					if(loadedPlaces != null) {
+					if (loadedPlaces != null) {
 						addPlace(loadedPlaces);
 					}
 					placesLoaded = true;
-					
+
 				}
 				changed = false;
-				
+
 				in.close();
 				inFile.close();
-				
-			}catch (FileNotFoundException e) {
+
+			} catch (FileNotFoundException e) {
 				JOptionPane.showMessageDialog(Main.this, "File can't be opened");
-			}catch(IOException ei){
+			} catch (IOException ei) {
 				JOptionPane.showMessageDialog(Main.this, "ERROR" + ei.getMessage());
 			}
-			
-		
+
 		}
 	}
-	
+
 	private void addPlace(Place place) {
 		placeByMapPosition.put(place.getPosition(), place);
 

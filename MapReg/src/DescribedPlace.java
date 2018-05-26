@@ -1,6 +1,11 @@
 
-
 public class DescribedPlace extends Place {
+	/**
+	 * 	 * Sebastian Åkerlund - 1995-10-01
+	 * seae5393
+	 * sebake01@gmail.com
+	 */
+	private static final long serialVersionUID = 1L;
 	private String description;
 
 	public DescribedPlace(String description, String name, Position mp, Category cg) {
